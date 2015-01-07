@@ -2,7 +2,7 @@ require 'pry'
 require 'spec_helper'
 require 'graphiti'
 
-RSpec.describe "Grapht" do
+RSpec.describe Graphiti do
 
   before(:all) do
     options = {
