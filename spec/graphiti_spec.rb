@@ -38,6 +38,16 @@ RSpec.describe Graphiti do
 
   end
 
+  describe '.truncate' do
+
+    it 'deletes the current database by truncation' do
+      {foo: "bar"}.insert.into :vertices
+      Graphiti.truncate
+      expect({foo: "bar"}.vertices.length).to eq 0
+    end
+
+  end
+
   before(:all) do
     options = {
       url: "http://127.0.0.1:8529",

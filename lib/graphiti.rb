@@ -15,6 +15,10 @@ module Graphiti
     true
   end
 
+  def self.truncate
+    @@db.truncate
+  end
+
 
   def vertices
     execute("RETURN GRAPH_VERTICES(@graph_name, @example)", {graph_name: @@graph_name, example: self}).first
