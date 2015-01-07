@@ -3,7 +3,8 @@ require "graphiti/version"
 
 module Graphiti
 
-  def self.configure options
+  def self.configure opt
+   options = symbolize_keys opt
     @@graph_name = options[:graph]
     @@db = Ashikawa::Core::Database.new() do |conf|
       conf.url = options[:url]
@@ -51,6 +52,17 @@ module Graphiti
 
   def execute query, bindvars
     db.query.execute(query, bind_vars: bindvars).to_a
+  end
+
+  def self.symbolize_keys(hash)
+    new = {}
+    hash.map do |key,value|
+      if value.is_a?(Hash)
+        value = symbolize_keys(value)
+      end
+      new[key.to_sym]=value
+    end
+    return new
   end
 
 end

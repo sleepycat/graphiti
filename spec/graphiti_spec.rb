@@ -4,6 +4,40 @@ require 'graphiti'
 
 RSpec.describe Graphiti do
 
+  describe ".configure" do
+
+    let(:options) do
+      {
+        url: "http://127.0.0.1:8529",
+        database_name: "test",
+        username: "",
+        password: "",
+        graph: "test"
+      }
+    end
+
+    let(:options_with_string_keys) do
+      {
+        'url' => 'http://127.0.0.1:8529',
+        'database_name' => 'test',
+        'username' => '',
+        'password' => '',
+        'graph' => 'test'
+      }
+    end
+
+    it "accepts configuration" do
+      expect(Graphiti.configure(options)).to eq true
+    end
+
+    it "handles string keys" do
+      expect{
+        Graphiti.configure(options_with_string_keys)
+      }.not_to raise_error
+    end
+
+  end
+
   before(:all) do
     options = {
       url: "http://127.0.0.1:8529",
@@ -28,15 +62,6 @@ RSpec.describe Graphiti do
     db.truncate
   end
 
-  let(:options) do
-    {
-      url: "http://127.0.0.1:8529",
-      database_name: "test",
-      username: "",
-      password: "",
-      graph: "test"
-    }
-  end
 
   let(:db){ {}.send(:db) }
 
@@ -44,9 +69,6 @@ RSpec.describe Graphiti do
     expect(Hash.ancestors).to include Graphiti
   end
 
-  it "accepts configuration" do
-    expect(Graphiti.configure(options)).to eq true
-  end
 
   it "provides an edges method" do
     expect({foo: "bar"}.edges.length).to be 1
