@@ -1,24 +1,34 @@
 require 'ashikawa-core'
 require "graphiti/version"
+require 'graphiti/builder'
+require 'graphiti/configuration'
+require 'graphiti/components/neighbors'
+require 'graphiti/components/filter'
+require 'graphiti/components/list'
+require 'graphiti/components/query'
 
 module Graphiti
 
   def self.configure opt
    options = symbolize_keys opt
-    @@graph_name = options[:graph]
+   @@config = Configuration.new options
+   @@graph_name = @@config.graph
     @@db = Ashikawa::Core::Database.new() do |conf|
-      conf.url = options[:url]
-      conf.database_name = options[:database_name]
-      conf.username = options[:username]
-      conf.password = options[:password]
+      conf.url = @@config.url
+      conf.database_name = @@config.database_name
+      conf.username = @@config.username
+      conf.password = @@config.password
     end
     true
+  end
+
+  def self.config
+    @@config
   end
 
   def self.truncate
     @@db.truncate
   end
-
 
   def vertices
     execute("RETURN GRAPH_VERTICES(@graph_name, @example)", {graph_name: @@graph_name, example: self}).first
@@ -28,8 +38,16 @@ module Graphiti
     execute("RETURN GRAPH_EDGES(@graph_name, @example)", {graph_name: @@graph_name, example: self}).first
   end
 
+  def filter options = {}
+    @builder ||= Builder.new self
+    @builder.filter(options)
+    self
+  end
+
   def neighbors options = {}
-    execute("RETURN GRAPH_NEIGHBORS(@graph_name, @example, @options)", {graph_name: @@graph_name, example: self, options: options}).first
+    @builder ||= Builder.new self
+    @builder.neighbors(options)
+    self
   end
 
   def remove
@@ -46,6 +64,11 @@ module Graphiti
 
   def into collection
     execute "INSERT @example INTO @@collection", {:example => self, "@collection" => collection.to_s}
+  end
+
+  def results
+    aql, bind_vars = @builder.to_query
+    execute(aql, bind_vars).flatten
   end
 
   private

@@ -61,15 +61,27 @@ RSpec.describe Graphiti do
   end
 
   before(:each) do
-    {foo: "bar"}.insert.into :vertices
-    foo = {foo: "bar"}.vertices.first
-    {fizz: "buzz"}.insert.into :vertices
-    fizz = {fizz: "buzz"}.vertices.first
     {_to: foo["_id"], _from: fizz["_id"]}.insert.into :edges
+    {_to: foo["_id"], _from: baz["_id"]}.insert.into :edges
+  end
+
+  let(:foo) do
+    {foo: "bar"}.insert.into :vertices
+    {foo: "bar"}.vertices.first
+  end
+
+  let(:baz) do
+    {baz: "quxx"}.insert.into :vertices
+    {baz: "quxx"}.vertices.first
+  end
+
+  let(:fizz) do
+    {fizz: "buzz"}.insert.into :vertices
+    {fizz: "buzz"}.vertices.first
   end
 
   after(:each) do
-    db.truncate
+    Graphiti.truncate
   end
 
 
@@ -81,7 +93,7 @@ RSpec.describe Graphiti do
 
 
   it "provides an edges method" do
-    expect({foo: "bar"}.edges.length).to be 1
+    expect({foo: "bar"}.edges.length).to be 2
   end
 
   it "finds neighbors of the example hash" do
@@ -102,6 +114,14 @@ RSpec.describe Graphiti do
 
   it "deletes data" do
     expect({name: "foo", type:"foo"}.remove.from(:vertices)).to eq []
+  end
+
+  it "Finds its neighbors" do
+    expect({foo: "bar"}.neighbors.results).to  eq [fizz, baz]
+  end
+
+  it "filters its neighbors" do
+    expect({foo: "bar"}.neighbors.filter(fizz: "buzz").results).not_to include baz
   end
 
 end
