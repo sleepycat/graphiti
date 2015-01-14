@@ -23,6 +23,10 @@ module Graphiti
     true
   end
 
+  def self.database
+    @@db
+  end
+
   def self.config
     @@config
   end

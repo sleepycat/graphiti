@@ -56,6 +56,14 @@ RSpec.describe Graphiti do
 
   end
 
+  describe ".database" do
+
+    it "returns the underlying database object" do
+      expect(Graphiti.database).to be_a Ashikawa::Core::Database
+    end
+
+  end
+
   before(:all) do
     options = {
       url: "http://127.0.0.1:8529",
