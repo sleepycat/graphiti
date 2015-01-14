@@ -48,6 +48,14 @@ RSpec.describe Graphiti do
 
   end
 
+  describe ".config" do
+
+    it "returns a configuration object" do
+      expect(Graphiti.config).to be_a Configuration
+    end
+
+  end
+
   before(:all) do
     options = {
       url: "http://127.0.0.1:8529",
@@ -85,12 +93,12 @@ RSpec.describe Graphiti do
   end
 
 
+
   let(:db){ {}.send(:db) }
 
   it "grafts itself into the Hash class" do
     expect(Hash.ancestors).to include Graphiti
   end
-
 
   it "provides an edges method" do
     expect({foo: "bar"}.edges.results.length).to be 2
