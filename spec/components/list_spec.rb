@@ -5,17 +5,6 @@ module Graphiti
 
   RSpec.describe List do
 
-    before(:all) do
-      options = {
-        url: "http://127.0.0.1:8529",
-        database_name: "test",
-        username: "",
-        password: "",
-        graph: "test"
-      }
-      Graphiti.configure options
-    end
-
     let(:db){ {}.send(:db) }
 
     it "creates a valid AQL query" do

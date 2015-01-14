@@ -64,18 +64,6 @@ RSpec.describe Graphiti do
 
   end
 
-  before(:all) do
-    options = {
-      url: "http://127.0.0.1:8529",
-      database_name: "test",
-      username: "",
-      password: "",
-      graph: "test"
-    }
-
-    Graphiti.configure options
-  end
-
   before(:each) do
     {_to: foo["_id"], _from: fizz["_id"]}.insert.into :edges
     {_to: foo["_id"], _from: baz["_id"]}.insert.into :edges
