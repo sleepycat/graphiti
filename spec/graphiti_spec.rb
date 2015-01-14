@@ -90,7 +90,7 @@ RSpec.describe Graphiti do
 
 
 
-  let(:db){ {}.send(:db) }
+  let(:db){ Graphiti.database }
 
   it "grafts itself into the Hash class" do
     expect(Hash.ancestors).to include Graphiti

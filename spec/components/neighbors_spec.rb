@@ -6,7 +6,7 @@ module Graphiti
 
   RSpec.describe Neighbors do
 
-    let(:db){ {}.send(:db) }
+    let(:db){ Graphiti.database }
 
     before(:each) do
       {foo: "bar"}.insert.into :vertices

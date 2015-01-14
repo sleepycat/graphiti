@@ -5,7 +5,7 @@ module Graphiti
 
   RSpec.describe List do
 
-    let(:db){ {}.send(:db) }
+    let(:db){ Graphiti.database }
 
     it "creates a valid AQL query" do
       results = db.query.valid? "RETURN #{List.new(foo: "bar").aql}"

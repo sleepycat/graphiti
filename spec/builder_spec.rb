@@ -27,7 +27,7 @@ module Graphiti
       {fizz: "buzz"}.vertices.first
     end
 
-    let(:db){ {}.send(:db) }
+    let(:db){ Graphiti.database }
 
     describe "#to_query" do
       it "returns a valid AQL query" do
