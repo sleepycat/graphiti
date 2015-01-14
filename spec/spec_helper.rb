@@ -1,3 +1,6 @@
+require 'pry'
+require 'graphiti'
+
 RSpec.configure do |config|
 
   # As Lessig says: "embrace the irony"
@@ -10,6 +13,17 @@ RSpec.configure do |config|
 
   config.mock_with :rspec do |mocks|
     mocks.verify_partial_doubles = true
+  end
+
+  config.before(:suite) do
+    options = {
+      url: "http://127.0.0.1:8529",
+      database_name: "test",
+      username: "",
+      password: "",
+      graph: "test"
+    }
+    Graphiti.configure options
   end
 
 end

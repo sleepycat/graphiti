@@ -93,7 +93,7 @@ RSpec.describe Graphiti do
 
 
   it "provides an edges method" do
-    expect({foo: "bar"}.edges.length).to be 2
+    expect({foo: "bar"}.edges.results.length).to be 2
   end
 
   it "finds neighbors of the example hash" do
@@ -101,7 +101,7 @@ RSpec.describe Graphiti do
   end
 
   it "finds neighbors using an options hash" do
-    expect({foo: "bar"}.neighbors(maxDepth: 2).length).to be 1
+    expect({foo: "bar"}.neighbors(maxDepth: 2).results.length).to be 2
   end
 
   it "finds matching vertices" do

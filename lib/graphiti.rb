@@ -3,6 +3,7 @@ require "graphiti/version"
 require 'graphiti/builder'
 require 'graphiti/configuration'
 require 'graphiti/components/neighbors'
+require 'graphiti/components/edges'
 require 'graphiti/components/filter'
 require 'graphiti/components/list'
 require 'graphiti/components/query'
@@ -34,10 +35,6 @@ module Graphiti
     execute("RETURN GRAPH_VERTICES(@graph_name, @example)", {graph_name: @@graph_name, example: self}).first
   end
 
-  def edges
-    execute("RETURN GRAPH_EDGES(@graph_name, @example)", {graph_name: @@graph_name, example: self}).first
-  end
-
   def filter options = {}
     @builder ||= Builder.new self
     @builder.filter(options)
@@ -47,6 +44,12 @@ module Graphiti
   def neighbors options = {}
     @builder ||= Builder.new self
     @builder.neighbors(options)
+    self
+  end
+
+  def edges options = {}
+    @builder ||= Builder.new self
+    @builder.edges(options)
     self
   end
 

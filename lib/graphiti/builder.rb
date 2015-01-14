@@ -11,6 +11,11 @@ module Graphiti
       self
     end
 
+    def edges options = {}
+      @stack << [Edges, options]
+      self
+    end
+
     def filter options = {}
       @stack << [Filter, options]
       self
