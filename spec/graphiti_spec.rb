@@ -112,8 +112,9 @@ RSpec.describe Graphiti do
     expect({foo: "bar"}.vertices.length).to be 1
   end
 
-  it "inserts data" do
-    expect({name: "foo", type:"foo"}.insert.into(:vertices)).to eq []
+  it "inserts data and returns the hash" do
+    expect({name: "foo", type:"foo"}.insert.into(:vertices).first.keys).to match_array ["name", "type"]
+
   end
 
   it "deletes data" do
