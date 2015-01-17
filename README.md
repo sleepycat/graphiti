@@ -20,13 +20,10 @@ hackery leads to something that feels natural with graphs.
     Hash.include Graphiti
 
     # Insert into existing document collection
-    {foo: "bar"}.insert.into :vertices
-    # Retrieve the vertex and store it in foo
-    foo = {foo: "bar"}.vertices.first
+    foo = {foo: "bar"}.insert.into(:vertices).first
 
     # same same
-    {fizz: "buzz"}.insert.into :vertices
-    fizz = {fizz: "buzz"}.vertices.first
+    fizz = {fizz: "buzz"}.insert.into(:vertices).first
 
     # Inserting into an existing edge collection
     {_to: foo["_id"], _from: fizz["_id"]}.insert.into :edges
@@ -132,7 +129,6 @@ Or install it yourself as:
 ## TODO
 
 * Add sort method
-* Inserting hashes into the db should return the whole document. I'm assuming that [will be possible](http://stackoverflow.com/questions/27788089/insert-and-return-document-in-a-single-aql-query) with Arango 2.4.1.
 * If a hash has a key with type: "foo" maybe it makes sense to save it to the "foo" collection.
 * Explore Hashie's [method access](https://github.com/intridea/hashie/blob/master/lib/hashie/extensions/method_access.rb).
 * Maybe it would be better to have all the graphiti methods on some itermediary object to avoid name clashes.
