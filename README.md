@@ -1,5 +1,8 @@
 # Graphiti
 
+[![Code
+Climate](https://codeclimate.com/github/sleepycat/graphiti/badges/gpa.svg)](https://codeclimate.com/github/sleepycat/graphiti)
+
 This library "vandalizes" your hash class to allow hash instances to talk
 to the [ArangoDB](https://www.arangodb.com/) graph/document database.
 
