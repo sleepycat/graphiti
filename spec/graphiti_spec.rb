@@ -113,7 +113,7 @@ RSpec.describe Graphiti do
   end
 
   it "inserts data and returns the hash" do
-    expect({name: "foo", type:"foo"}.insert.into(:vertices).first.keys).to match_array ["name", "type"]
+    expect({name: "foo", type:"foo"}.insert.into(:vertices).keys).to match_array ["name", "type"]
 
   end
 

@@ -75,7 +75,7 @@ module Graphiti
   # TODO: Ashikawa::Core::Document does not provide internal
   # attributes (such as _id, _key, etc.). That should be changed.
   def into collection
-    execute("INSERT @example INTO @@collection LET inserted = NEW RETURN inserted", {:example => self, "@collection" => collection.to_s}).to_a.map(&:to_h)
+    execute("INSERT @example INTO @@collection LET inserted = NEW RETURN inserted", {:example => self, "@collection" => collection.to_s}).to_a.map(&:to_h).first
   end
 
   def results
