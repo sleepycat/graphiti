@@ -90,7 +90,7 @@ module Graphiti
 
   def results
     aql, bind_vars = @builder.to_query
-    execute(aql, bind_vars).flatten
+    execute(aql, bind_vars).first
   end
 
   private

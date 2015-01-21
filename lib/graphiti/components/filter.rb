@@ -5,13 +5,7 @@ module Graphiti
 
     def initialize list, example = {}
       @example_name = SecureRandom.hex(6)
-      # TODO: revisit this.
-      # Really it should be the responsiblity of each component to make
-      # sure it emits a flat list of documents so that other components
-      # can work with them. Unfortunately its kind of tricky to actually
-      # do it. So for now it seems like the way to go is flatten stuff
-      # on the way in. :(
-      @aql = "(FOR i IN FLATTEN(#{list.aql}) FILTER MATCHES(i, @#{@example_name}) RETURN i)"
+      @aql = "(FOR i IN (#{list.aql}) FOR f IN i FILTER MATCHES(f, @#{@example_name}) RETURN f)"
       @bind_vars = list.bind_vars.merge(@example_name.to_s => example)
     end
 

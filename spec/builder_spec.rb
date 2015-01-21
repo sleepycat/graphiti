@@ -4,27 +4,32 @@ module Graphiti
   RSpec.describe Builder do
 
     before(:each) do
-      {_to: foo["_id"], type: 'edge_from_fizz', _from: fizz["_id"]}.insert.into :edges
-      {_to: foo["_id"], type: 'edge_from_baz', _from: baz["_id"]}.insert.into :edges
+      edge_from_baz_to_foo
+      edge_from_fizz_to_foo
     end
 
     after(:each) do
       Graphiti.truncate
     end
 
+    let(:edge_from_baz_to_foo) do
+      {_to: foo["_id"], type: 'edge_from_baz', _from: baz["_id"]}.insert.into :edges
+    end
+
+    let(:edge_from_fizz_to_foo) do
+      {_to: foo["_id"], type: 'edge_from_fizz', _from: fizz["_id"]}.insert.into :edges
+    end
+
     let(:foo) do
       {foo: "bar"}.insert.into :vertices
-      {foo: "bar"}.vertices.first
     end
 
     let(:baz) do
       {baz: "quxx"}.insert.into :vertices
-      {baz: "quxx"}.vertices.first
     end
 
     let(:fizz) do
       {fizz: "buzz"}.insert.into :vertices
-      {fizz: "buzz"}.vertices.first
     end
 
     let(:db){ Graphiti.database }
@@ -48,7 +53,7 @@ module Graphiti
         builder = Builder.new(foo: "bar")
         aql, bind_vars = builder.edges.to_query
         results = db.query.execute(aql, bind_vars: bind_vars).to_a.flatten
-        expect(results.first["type"]).to eq "edge_from_fizz"
+        expect(results).to match_array [ edge_from_fizz_to_foo, edge_from_baz_to_foo ]
       end
 
       it "returns filtered edges" do

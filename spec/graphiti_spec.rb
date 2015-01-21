@@ -64,69 +64,92 @@ RSpec.describe Graphiti do
 
   end
 
-  before(:each) do
-    {_to: foo["_id"], _from: fizz["_id"]}.insert.into :edges
-    {_to: foo["_id"], _from: baz["_id"]}.insert.into :edges
-  end
+  describe "instance methods" do
 
-  let(:foo) do
-    {foo: "bar"}.insert.into :vertices
-    {foo: "bar"}.vertices.first
-  end
+    before(:each) do
+      edge_to_foo_from_baz
+      edge_to_foo_from_fizz
+      edge_to_asdf_from_baz
+    end
 
-  let(:baz) do
-    {baz: "quxx"}.insert.into :vertices
-    {baz: "quxx"}.vertices.first
-  end
+    let(:edge_to_asdf_from_baz) do
+      {_to: asdf["_id"], type: "edge_to_asdf_from_baz", _from: baz["_id"]}.insert.into :edges
+    end
 
-  let(:fizz) do
-    {fizz: "buzz"}.insert.into :vertices
-    {fizz: "buzz"}.vertices.first
-  end
+    let(:edge_to_foo_from_baz) do
+      {_to: foo["_id"], type: "edge_to_foo_from_baz", _from: baz["_id"]}.insert.into :edges
+    end
 
-  after(:each) do
-    Graphiti.truncate
-  end
+    let(:edge_to_foo_from_fizz) do
+      {_to: foo["_id"], type: "edge_from_foo_to_fizz", _from: fizz["_id"]}.insert.into :edges
+    end
+
+    let(:asdf) do
+      {asdf: "ghjk"}.insert.into :vertices
+    end
+
+    let(:foo) do
+      {foo: "bar"}.insert.into :vertices
+    end
+
+    let(:baz) do
+      {baz: "quxx"}.insert.into :vertices
+    end
+
+    let(:fizz) do
+      {fizz: "buzz"}.insert.into :vertices
+    end
+
+    after(:each) do
+      Graphiti.truncate
+    end
 
 
 
-  let(:db){ Graphiti.database }
+    let(:db){ Graphiti.database }
 
-  it "grafts itself into the Hash class" do
-    expect(Hash.ancestors).to include Graphiti
-  end
+    it "grafts itself into the Hash class" do
+      expect(Hash.ancestors).to include Graphiti
+    end
 
-  it "provides an edges method" do
-    expect({foo: "bar"}.edges.results.length).to be 2
-  end
+    it "provides an edges method" do
+      expect({foo: "bar"}.edges.results).to match_array [[edge_to_foo_from_baz, edge_to_foo_from_fizz]]
+    end
 
-  it "finds neighbors of the example hash" do
-    expect({foo: "bar"}.neighbors.length).to be 1
-  end
+    it "finds neighbors of neighbors" do
+      # NB: the neighbor of foo's neighbor includes foo, our starting
+      # point.
+      expect({foo: "bar"}.neighbors.neighbors.results.first).to match_array [asdf, foo]
+    end
 
-  it "finds neighbors using an options hash" do
-    expect({foo: "bar"}.neighbors(maxDepth: 2).results.length).to be 2
-  end
+    it "finds neighbors of the example hash" do
+      expect({foo: "bar"}.neighbors.results.first).to match_array [baz, fizz]
+    end
 
-  it "finds matching vertices" do
-    expect({foo: "bar"}.vertices.length).to be 1
-  end
+    it "finds neighbors using an options hash" do
+      expect({foo: "bar"}.neighbors(maxDepth: 2).results.first).to match_array [asdf, fizz, baz]
+    end
 
-  it "inserts data and returns the entire hash" do
-    expect({name: "foo", type:"foo"}.insert.into(:vertices).keys).to match_array ["name", "type", "_id", "_rev", "_key"]
+    it "finds matching vertices" do
+      expect({foo: "bar"}.vertices.length).to be 1
+    end
 
-  end
+    it "inserts data and returns the entire hash" do
+      expect(foo.keys).to match_array ["foo", "_id", "_rev", "_key"]
+    end
 
-  it "deletes data" do
-    expect({name: "foo", type:"foo"}.remove.from(:vertices)).to eq []
-  end
+    it "deletes data" do
+      expect({name: "foo", type:"foo"}.remove.from(:vertices)).to eq []
+    end
 
-  it "Finds its neighbors" do
-    expect({foo: "bar"}.neighbors.results).to  eq [fizz, baz]
-  end
+    it "Finds its neighbors" do
+      expect({foo: "bar"}.neighbors.results.first).to match_array [fizz, baz]
+    end
 
-  it "filters its neighbors" do
-    expect({foo: "bar"}.neighbors.filter(fizz: "buzz").results).not_to include baz
+    it "filters its neighbors" do
+      expect({foo: "bar"}.neighbors.filter(fizz: "buzz").results).not_to include baz
+    end
+
   end
 
 end
