@@ -61,8 +61,21 @@ module Graphiti
     self
   end
 
+  # XXX: Ashikawa::Core::Document does not provide internal
+  # attributes (such as _id, _key, etc.). That should be changed.
+  # This is straight duplication of the code for insertion.
   def from(collection)
-    execute "FOR i IN @@collection FILTER MATCHES(i, @example) REMOVE i IN @@collection", {:example => self, "@collection" => collection.to_s}
+    doc = execute("FOR i IN @@collection FILTER MATCHES(i, @example) REMOVE i IN @@collection LET removed = OLD RETURN removed", {:example => self, "@collection" => collection.to_s}).to_a.first
+    complete_hash = doc.to_h
+    if doc.respond_to? :to_id
+      #its and edge document
+      complete_hash["_to"] = doc.to_id
+      complete_hash["_from"] = doc.from_id
+    end
+    complete_hash["_id"] = doc.id
+    complete_hash["_key"] = doc.key
+    complete_hash["_rev"] = doc.revision
+    complete_hash
   end
 
   def insert

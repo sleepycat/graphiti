@@ -138,8 +138,10 @@ RSpec.describe Graphiti do
       expect(foo.keys).to match_array ["foo", "_id", "_rev", "_key"]
     end
 
-    it "deletes data" do
-      expect({name: "foo", type:"foo"}.remove.from(:vertices)).to eq []
+    it "deletes data and returns the deleted hash" do
+      Graphiti.truncate
+      asdf = {asdf: 'ghjk'}.insert.into :vertices
+      expect({asdf: 'ghjk'}.remove.from(:vertices)).to eq asdf
     end
 
     it "Finds its neighbors" do
