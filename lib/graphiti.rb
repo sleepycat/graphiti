@@ -61,9 +61,6 @@ module Graphiti
     self
   end
 
-  # XXX: Ashikawa::Core::Document does not provide internal
-  # attributes (such as _id, _key, etc.). That should be changed.
-  # This is straight duplication of the code for insertion.
   def from(collection)
     execute("FOR i IN @@collection FILTER MATCHES(i, @example) REMOVE i IN @@collection LET removed = OLD RETURN removed", {:example => self, "@collection" => collection.to_s}).first
   end
@@ -74,9 +71,6 @@ module Graphiti
 
   # Inserts the hash into the specified collection.
   #    foo = {foo: "bar"}.insert.into :vertices
-
-  # TODO: Ashikawa::Core::Document does not provide internal
-  # attributes (such as _id, _key, etc.). That should be changed.
   def into collection
     execute("INSERT @example INTO @@collection LET inserted = NEW RETURN inserted", {:example => self, "@collection" => collection.to_s}).first
   end
