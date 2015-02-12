@@ -1,5 +1,6 @@
-require 'ashikawa-core'
-require "graphiti/version"
+require 'base64'
+require 'faraday'
+require 'graphiti/version'
 require 'graphiti/builder'
 require 'graphiti/configuration'
 require 'graphiti/components/neighbors'
@@ -11,20 +12,16 @@ require 'graphiti/components/query'
 module Graphiti
 
   def self.configure opt
-   options = symbolize_keys opt
-   @@config = Configuration.new options
-   @@graph_name = @@config.graph
-    @@db = Ashikawa::Core::Database.new() do |conf|
-      conf.url = @@config.url
-      conf.database_name = @@config.database_name
-      conf.username = @@config.username
-      conf.password = @@config.password
+    options = symbolize_keys opt
+    @@config = Configuration.new options
+    @@graph_name = @@config.graph
+    @@conn = Faraday.new(:url => @@config.url) do |faraday|
+      faraday.request  :url_encoded             # form-encode POST params
+      faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
     end
-    true
-  end
+    @@collections = get_collections
 
-  def self.database
-    @@db
+    true
   end
 
   def self.config
@@ -32,7 +29,10 @@ module Graphiti
   end
 
   def self.truncate
-    @@db.truncate
+    @@collections.each do |collection|
+      # PUT /_api/collection/{collection-name}/truncate
+      $conn.put "/_db/#{@@config.database_name}/_api/collection/#{collection}/truncate"
+    end
   end
 
   def vertices
@@ -65,17 +65,7 @@ module Graphiti
   # attributes (such as _id, _key, etc.). That should be changed.
   # This is straight duplication of the code for insertion.
   def from(collection)
-    doc = execute("FOR i IN @@collection FILTER MATCHES(i, @example) REMOVE i IN @@collection LET removed = OLD RETURN removed", {:example => self, "@collection" => collection.to_s}).to_a.first
-    complete_hash = doc.to_h
-    if doc.respond_to? :to_id
-      #its and edge document
-      complete_hash["_to"] = doc.to_id
-      complete_hash["_from"] = doc.from_id
-    end
-    complete_hash["_id"] = doc.id
-    complete_hash["_key"] = doc.key
-    complete_hash["_rev"] = doc.revision
-    complete_hash
+    execute("FOR i IN @@collection FILTER MATCHES(i, @example) REMOVE i IN @@collection LET removed = OLD RETURN removed", {:example => self, "@collection" => collection.to_s}).first
   end
 
   def insert
@@ -88,17 +78,7 @@ module Graphiti
   # TODO: Ashikawa::Core::Document does not provide internal
   # attributes (such as _id, _key, etc.). That should be changed.
   def into collection
-    doc = execute("INSERT @example INTO @@collection LET inserted = NEW RETURN inserted", {:example => self, "@collection" => collection.to_s}).to_a.first
-    complete_hash = doc.to_h
-    if doc.respond_to? :to_id
-      #its and edge document
-      complete_hash["_to"] = doc.to_id
-      complete_hash["_from"] = doc.from_id
-    end
-    complete_hash["_id"] = doc.id
-    complete_hash["_key"] = doc.key
-    complete_hash["_rev"] = doc.revision
-    complete_hash
+    execute("INSERT @example INTO @@collection LET inserted = NEW RETURN inserted", {:example => self, "@collection" => collection.to_s}).first
   end
 
   def results
@@ -108,12 +88,25 @@ module Graphiti
 
   private
 
-  def db
-    @@db
+  def self.get_collections
+    # GET /_api/collection
+    res = JSON.parse(@@conn.get("/_db/#{@@config.database_name}/_api/collection", {excludeSystem: true}).body)
+    res["names"].keys
+  end
+
+  def conn
+    @@conn
   end
 
   def execute query, bindvars
-    db.query.execute(query, bind_vars: bindvars).to_a
+    res = @@conn.post do |req|
+      req.url "/_db/#{@@config.database_name}/_api/cursor"
+      req.headers['Content-Type'] = 'application/json'
+      req.headers['Authorization'] = "Basic #{Base64.encode64("#{@@config.username}:#{@@config.password}")}"
+      req.body = { query: query, bindVars: bindvars }.to_json
+    end
+
+    JSON.parse(res.body)["result"]
   end
 
   def self.symbolize_keys(hash)

@@ -6,8 +6,6 @@ module Graphiti
 
   RSpec.describe Neighbors do
 
-    let(:db){ Graphiti.database }
-
     before(:each) do
       {foo: "bar"}.insert.into :vertices
       foo = {foo: "bar"}.vertices.first
@@ -17,23 +15,23 @@ module Graphiti
     end
 
     after(:each) do
-      Graphiti.truncate
+      clean_out_db
     end
 
     it "creates a valid AQL query" do
-      results = db.query.valid? "RETURN #{Neighbors.new(List.new(foo: "bar")).aql}"
+      results = validate_aql "RETURN #{Neighbors.new(List.new(foo: "bar")).aql}"
       expect(results).to eq true
     end
 
     it "returns expected results" do
       aql, bind_vars = Neighbors.new(List.new(foo: "bar")).to_query
-      results = db.query.execute("RETURN #{aql}", bind_vars: bind_vars).to_a.flatten.first
+      results = execute_query("RETURN #{aql}", bind_vars).flatten.first
       expect(results["fizz"]).to eq "buzz"
     end
 
     it "can be nested" do
       aql = "RETURN #{Neighbors.new(Neighbors.new(List.new(foo: 'bar'))).aql}"
-      expect(db.query.valid? aql ).to eq true
+      expect(validate_aql aql ).to eq true
     end
 
     it "has a proper number of bind vars" do

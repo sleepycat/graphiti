@@ -56,14 +56,6 @@ RSpec.describe Graphiti do
 
   end
 
-  describe ".database" do
-
-    it "returns the underlying database object" do
-      expect(Graphiti.database).to be_a Ashikawa::Core::Database
-    end
-
-  end
-
   describe "instance methods" do
 
     before(:each) do
@@ -101,12 +93,8 @@ RSpec.describe Graphiti do
     end
 
     after(:each) do
-      Graphiti.truncate
+      clean_out_db
     end
-
-
-
-    let(:db){ Graphiti.database }
 
     it "grafts itself into the Hash class" do
       expect(Hash.ancestors).to include Graphiti

@@ -6,10 +6,8 @@ module Graphiti
 
   RSpec.describe Query do
 
-    let(:db){ Graphiti.database }
-
     it "creates a valid AQL query" do
-      results = db.query.valid? Query.new(List.new(foo: "bar")).aql
+      results = validate_aql Query.new(List.new(foo: "bar")).aql
       expect(results).to eq true
     end
 

@@ -11,10 +11,8 @@ module Graphiti
     end
 
     after(:each) do
-      Graphiti.truncate
+      clean_out_db
     end
-
-    let(:db){ {}.send(:db) }
 
     let(:foo) do
       {foo: "bar"}.vertices.first
@@ -27,12 +25,12 @@ module Graphiti
     let(:edges){ Edges.new(List.new(foo: "bar")) }
 
     it "creates a valid AQL query" do
-      results = db.query.valid? "RETURN #{edges.aql}"
+      results = validate_aql "RETURN #{edges.aql}"
       expect(results).to eq true
     end
 
     it "returns the edges for the specified vertex" do
-      results = db.query.execute("RETURN #{edges.aql}", bind_vars: edges.bind_vars).to_a.flatten
+      results = execute_query("RETURN #{edges.aql}", edges.bind_vars).flatten
       expect(results.first["_to"]).to eq foo["_id"]
     end
 
