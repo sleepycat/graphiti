@@ -132,6 +132,17 @@ RSpec.describe Graphiti do
       expect({asdf: 'ghjk'}.remove.from(:vertices)).to eq asdf
     end
 
+    it "updates matching vertices in the specified collection" do
+      pikachu = { name: 'Pikachu', species: 'pokémon', type: "yellow" }.insert.into :vertices
+      pikachu["type"]= "electric"
+      pikachu.update_in :vertices
+      expect({name: 'Pikachu', species: 'pokémon'}.vertices.first["type"]).to eq "electric"
+    end
+
+    it "returns false when trying to update something that is not persisted" do
+      expect({ abc: 123 }.update_in :vertices).to eq false
+    end
+
     it "Finds its neighbors" do
       expect({foo: "bar"}.neighbors.results.first).to match_array [fizz, baz]
     end

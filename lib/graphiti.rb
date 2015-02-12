@@ -69,6 +69,14 @@ module Graphiti
     self
   end
 
+  def update_in collection
+    if self['_key']
+      execute("FOR i IN @@collection FILTER i._key == PARSE_IDENTIFIER(@example).key UPDATE i WITH @example IN @@collection LET updated = NEW RETURN updated", {"@collection" => collection.to_s, "example" => self })
+    else
+      false
+    end
+  end
+
   # Inserts the hash into the specified collection.
   #    foo = {foo: "bar"}.insert.into :vertices
   def into collection
