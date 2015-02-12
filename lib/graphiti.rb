@@ -31,7 +31,7 @@ module Graphiti
   def self.truncate
     @@collections.each do |collection|
       # PUT /_api/collection/{collection-name}/truncate
-      $conn.put "/_db/#{@@config.database_name}/_api/collection/#{collection}/truncate"
+      @@conn.put "/_db/#{@@config.database_name}/_api/collection/#{collection}/truncate"
     end
   end
 
