@@ -35,6 +35,19 @@ module Graphiti
     end
   end
 
+  # XXX: ugh, this duplicates execute method but at the class level
+  # instead of the instance level. Come back and fix this.
+  def self.query aql, bindvars
+    res = @@conn.post do |req|
+      req.url "/_db/#{@@config.database_name}/_api/cursor"
+      req.headers['Content-Type'] = 'application/json'
+      req.headers['Authorization'] = "Basic #{Base64.encode64("#{@@config.username}:#{@@config.password}")}"
+      req.body = { query: aql, bindVars: bindvars }.to_json
+    end
+
+    res.body
+  end
+
   def vertices
     execute("RETURN GRAPH_VERTICES(@graph_name, @example)", {graph_name: @@graph_name, example: self}).first
   end

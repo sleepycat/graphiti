@@ -38,6 +38,15 @@ RSpec.describe Graphiti do
 
   end
 
+  describe ".query" do
+
+    it "runs an arbitrary query on the current database, and returns the raw json" do
+      results = Graphiti.query "RETURN {}", {}
+      expect(JSON.parse(results)).to include "result" => [{}]
+    end
+
+  end
+
   describe '.truncate' do
 
     it 'deletes the current database by truncation' do
