@@ -7,9 +7,9 @@ module Graphiti
   RSpec.describe Neighbors do
 
     before(:each) do
-      {foo: "bar"}.insert.into :vertices
+      {foo: "bar"}.insert.into :nodes
       foo = {foo: "bar"}.vertices.first
-      {fizz: "buzz"}.insert.into :vertices
+      {fizz: "buzz"}.insert.into :nodes
       fizz = {fizz: "buzz"}.vertices.first
       {_to: foo["_id"], _from: fizz["_id"]}.insert.into :edges
     end

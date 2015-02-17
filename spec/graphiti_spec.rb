@@ -41,7 +41,7 @@ RSpec.describe Graphiti do
   describe '.truncate' do
 
     it 'deletes the current database by truncation' do
-      {foo: "bar"}.insert.into :vertices
+      {foo: "bar"}.insert.into :nodes
       Graphiti.truncate
       expect({foo: "bar"}.vertices.length).to eq 0
     end
@@ -77,19 +77,19 @@ RSpec.describe Graphiti do
     end
 
     let(:asdf) do
-      {asdf: "ghjk"}.insert.into :vertices
+      {asdf: "ghjk"}.insert.into :nodes
     end
 
     let(:foo) do
-      {foo: "bar"}.insert.into :vertices
+      {foo: "bar"}.insert.into :nodes
     end
 
     let(:baz) do
-      {baz: "quxx"}.insert.into :vertices
+      {baz: "quxx"}.insert.into :nodes
     end
 
     let(:fizz) do
-      {fizz: "buzz"}.insert.into :vertices
+      {fizz: "buzz"}.insert.into :nodes
     end
 
     after(:each) do
@@ -128,19 +128,19 @@ RSpec.describe Graphiti do
 
     it "deletes data and returns the deleted hash" do
       Graphiti.truncate
-      asdf = {asdf: 'ghjk'}.insert.into :vertices
-      expect({asdf: 'ghjk'}.remove.from(:vertices)).to eq asdf
+      asdf = {asdf: 'ghjk'}.insert.into :nodes
+      expect({asdf: 'ghjk'}.remove.from(:nodes)).to eq asdf
     end
 
     it "updates matching vertices in the specified collection" do
-      pikachu = { name: 'Pikachu', species: 'pokémon', type: "yellow" }.insert.into :vertices
+      pikachu = { name: 'Pikachu', species: 'pokémon', type: "yellow" }.insert.into :nodes
       pikachu["type"]= "electric"
-      pikachu.update_in :vertices
+      pikachu.update_in :nodes
       expect({name: 'Pikachu', species: 'pokémon'}.vertices.first["type"]).to eq "electric"
     end
 
     it "returns false when trying to update something that is not persisted" do
-      expect({ abc: 123 }.update_in :vertices).to eq false
+      expect({ abc: 123 }.update_in :nodes).to eq false
     end
 
     it "Finds its neighbors" do

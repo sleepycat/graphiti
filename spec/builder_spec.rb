@@ -21,15 +21,15 @@ module Graphiti
     end
 
     let(:foo) do
-      {foo: "bar"}.insert.into :vertices
+      {foo: "bar"}.insert.into :nodes
     end
 
     let(:baz) do
-      {baz: "quxx"}.insert.into :vertices
+      {baz: "quxx"}.insert.into :nodes
     end
 
     let(:fizz) do
-      {fizz: "buzz"}.insert.into :vertices
+      {fizz: "buzz"}.insert.into :nodes
     end
 
     describe "#to_query" do

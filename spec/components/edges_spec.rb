@@ -5,8 +5,8 @@ module Graphiti
   RSpec.describe Edges do
 
     before(:each) do
-      {foo: "bar"}.insert.into :vertices
-      {fizz: "buzz"}.insert.into :vertices
+      {foo: "bar"}.insert.into :nodes
+      {fizz: "buzz"}.insert.into :nodes
       {_to: foo["_id"], _from: fizz["_id"]}.insert.into :edges
     end
 
