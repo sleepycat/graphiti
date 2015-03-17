@@ -4,22 +4,20 @@ module Graphiti
 
   RSpec.describe Edges do
 
-    before(:each) do
+    let :foo do
       {foo: "bar"}.insert.into :nodes
+    end
+
+    let :fizz do
       {fizz: "buzz"}.insert.into :nodes
-      {_to: foo["_id"], _from: fizz["_id"]}.insert.into :edges
+    end
+
+    before(:each) do
+      {_to: foo["_id"], _from: fizz["_id"] }.insert.into :edges
     end
 
     after(:each) do
       clean_out_db
-    end
-
-    let(:foo) do
-      {foo: "bar"}.vertices.first
-    end
-
-    let(:fizz) do
-      {fizz: "buzz"}.vertices.first
     end
 
     let(:edges){ Edges.new(List.new(foo: "bar")) }
