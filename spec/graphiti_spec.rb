@@ -45,6 +45,10 @@ RSpec.describe Graphiti do
       expect(JSON.parse(results)).to include "result" => [{}]
     end
 
+    it "raises a useful error when things go pear shaped" do
+      expect{ Graphiti.query "", {} }.to raise_error Graphiti::ArangoDBError
+    end
+
   end
 
   describe '.truncate' do
@@ -125,6 +129,10 @@ RSpec.describe Graphiti do
 
     it "finds neighbors using an options hash" do
       expect({foo: "bar"}.neighbors(maxDepth: 2).results.first).to match_array [asdf, fizz, baz]
+    end
+
+    it "raises an error if you try to insert a hash with an _id attribute" do
+      expect{ foo.insert.into :nodes }.to raise_error Graphiti::ArangoDBError
     end
 
     it "finds matching vertices" do

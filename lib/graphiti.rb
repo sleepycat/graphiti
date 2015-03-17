@@ -2,6 +2,7 @@ require 'base64'
 require 'faraday'
 require 'graphiti/version'
 require 'graphiti/builder'
+require 'graphiti/exceptions'
 require 'graphiti/configuration'
 require 'graphiti/components/neighbors'
 require 'graphiti/components/edges'
@@ -44,8 +45,13 @@ module Graphiti
       req.headers['Authorization'] = "Basic #{Base64.encode64("#{@@config.username}:#{@@config.password}")}"
       req.body = { query: aql, bindVars: bindvars }.to_json
     end
+    parsed_response = JSON.parse(res.body)
 
-    res.body
+    if parsed_response["error"]
+      raise ArangoDBError, parsed_response["errorMessage"]
+    else
+      res.body
+    end
   end
 
   def vertices
@@ -120,8 +126,12 @@ module Graphiti
       req.headers['Authorization'] = "Basic #{Base64.encode64("#{@@config.username}:#{@@config.password}")}"
       req.body = { query: query, bindVars: bindvars }.to_json
     end
-
-    JSON.parse(res.body)["result"]
+    parsed_response = JSON.parse(res.body)
+    if parsed_response["error"]
+      raise ArangoDBError, parsed_response["errorMessage"]
+    else
+      parsed_response["result"]
+    end
   end
 
   def self.symbolize_keys(hash)
