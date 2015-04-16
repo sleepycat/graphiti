@@ -25,6 +25,23 @@ module Graphiti
     true
   end
 
+  def self.load_json json, options
+    res = @@conn.post do |req|
+      req.url "#{@@config.url}/_db/#{@@config.database_name}/_api/import"
+      req.headers['Content-Type'] = 'application/json; charset=UTF-8'
+      req.headers['Authorization'] = "Basic #{Base64.encode64("#{@@config.username}:#{@@config.password}")}"
+      req.body = json
+      req.params['type'] = 'documents'
+      req.params['collection'] = options[:into]
+    end
+    parsed_response = JSON.parse(res.body)
+    unless parsed_response["errors"] == 0
+      raise ArangoDBError, 'There were errors in the import. Check the JSON is valid.'
+    else
+      true
+    end
+  end
+
   def self.config
     @@config
   end

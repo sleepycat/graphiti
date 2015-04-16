@@ -69,6 +69,18 @@ RSpec.describe Graphiti do
 
   end
 
+  describe ".load_json" do
+
+    it "loads json into the specified collection" do
+      expect(Graphiti.load_json(JSON.generate({foo: 'bar'}), into: :nodes)).to eq true
+    end
+
+    it "raises an error if you try to load !json" do
+      expect{Graphiti.load_json("}{",into: :nodes)}.to raise_error Graphiti::ArangoDBError
+    end
+
+  end
+
   describe "instance methods" do
 
     before(:each) do
