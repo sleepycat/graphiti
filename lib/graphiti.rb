@@ -32,11 +32,12 @@ module Graphiti
       req.headers['Authorization'] = "Basic #{Base64.encode64("#{@@config.username}:#{@@config.password}")}"
       req.body = json
       req.params['type'] = 'documents'
+      req.params['details'] = true
       req.params['collection'] = options[:into]
     end
     parsed_response = JSON.parse(res.body)
     unless parsed_response["errors"] == 0
-      raise ArangoDBError, 'There were errors in the import. Check the JSON is valid.'
+      raise ArangoDBError, "There were errors in the import: #{parsed_response["details"]}"
     else
       true
     end
